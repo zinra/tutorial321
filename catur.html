@@ -1,0 +1,87 @@
+const board = document.getElementById("chessboard");
+
+// Notasi Unicode bidak catur
+const pieces = {
+  white: {
+    pawn: "♙",
+    rook: "♖",
+    knight: "♘",
+    bishop: "♗",
+    queen: "♕",
+    king: "♔"
+  },
+  black: {
+    pawn: "♟",
+    rook: "♜",
+    knight: "♞",
+    bishop: "♝",
+    queen: "♛",
+    king: "♚"
+  }
+};
+
+// Buat papan 8x8
+let selectedPiece = null;
+
+function createBoard() {
+  board.innerHTML = "";
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const square = document.createElement("div");
+      square.classList.add("square");
+      square.classList.add((row + col) % 2 === 0 ? "white" : "black");
+      square.dataset.row = row;
+      square.dataset.col = col;
+      square.addEventListener("click", onSquareClick);
+      board.appendChild(square);
+    }
+  }
+}
+
+function setInitialPieces() {
+  const layout = [
+    ["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"],
+    Array(8).fill("pawn")
+  ];
+
+  // Set black pieces
+  layout.forEach((rowPieces, rowIdx) => {
+    rowPieces.forEach((piece, col) => {
+      setPiece(0 + rowIdx, col, pieces.black[piece]);
+    });
+  });
+
+  // Set white pieces
+  layout.forEach((rowPieces, rowIdx) => {
+    rowPieces.forEach((piece, col) => {
+      setPiece(7 - rowIdx, col, pieces.white[piece]);
+    });
+  });
+}
+
+function setPiece(row, col, symbol) {
+  const square = getSquare(row, col);
+  square.textContent = symbol;
+  square.classList.add("piece");
+}
+
+function getSquare(row, col) {
+  return board.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+}
+
+function onSquareClick(e) {
+  const square = e.currentTarget;
+  if (selectedPiece) {
+    // Pindahkan
+    square.textContent = selectedPiece.textContent;
+    square.classList.add("piece");
+    selectedPiece.textContent = "";
+    selectedPiece.classList.remove("piece");
+    selectedPiece = null;
+  } else if (square.textContent !== "") {
+    selectedPiece = square;
+  }
+}
+
+createBoard();
+setInitialPieces();
